@@ -13,6 +13,7 @@ public class MenuCard {
     }
 
     public JPanel createLayout() {
+
         JLabel title = menuModel.getTitle();
         title.setHorizontalAlignment(JLabel.CENTER);
 
@@ -27,6 +28,7 @@ public class MenuCard {
 
         menuModel.getLoginButton().addActionListener(menuController);
         menuModel.getRegisterButton().addActionListener(menuController);
+        menuModel.getRecoverButton().addActionListener(menuController);
 
         return menuPanel;
     }

@@ -2,6 +2,7 @@ package views;
 
 import models.LoginModel;
 import models.MenuModel;
+import models.RecoverModel;
 import models.RegisterModel;
 import objects.User;
 import views.cards.LoginCard;
@@ -64,20 +65,19 @@ public class GameGUI extends JFrame {
         MenuModel menuModel = new MenuModel(cardLayout, cardHolder, cardList);
         LoginModel loginModel = new LoginModel(cardLayout, cardHolder, cardList, this);
         RegisterModel registerModel = new RegisterModel(cardLayout, cardHolder, cardList);
+        RecoverModel recoverModel = new RecoverModel(cardLayout, cardHolder, cardList);
 
         //Create panels for each card
         MenuCard menuCard = new MenuCard(menuModel);
         LoginCard loginCard = new LoginCard(loginModel);
         RegisterCard registerCard = new RegisterCard(registerModel);
-//        RegisterCard registrationCard = new RegisterCard(cardLayout, cardHolder, cardList);
-//        RecoverCard recoverCard = new RecoverCard(cardLayout, cardHolder, cardList);
+        RecoverCard recoverCard = new RecoverCard(recoverModel);
 
         //Add card panels to the card holder
         cardHolder.add(menuCard.createLayout(), cardList.get(0));
         cardHolder.add(loginCard.createLayout(), cardList.get(1));
         cardHolder.add(registerCard.createLayout(), cardList.get(2));
-//        cardHolder.add(registrationCard.createLayout(), cardList.get(2));
-//        cardHolder.add(recoverCard.createLayout(), cardList.get(3));
+        cardHolder.add(recoverCard.createLayout(), cardList.get(3));
 
         //Wrap cardHolder
         cardWrapper.add(cardHolder, new GridBagConstraints());
