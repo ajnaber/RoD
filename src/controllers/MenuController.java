@@ -14,7 +14,6 @@ public class MenuController implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent event) {
-        System.out.println(event);
         if (event.getActionCommand().equals(menuModel.getLoginButton().getText())) { menuModel.showLoginCard(); }
         if (event.getActionCommand().equals(menuModel.getRegisterButton().getText())) { menuModel.showRegisterCard(); }
         if (event.getActionCommand().equals(menuModel.getRecoverButton().getText())) { menuModel.showRecoverCard(); }

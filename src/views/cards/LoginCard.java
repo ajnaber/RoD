@@ -25,6 +25,8 @@ public class LoginCard {
         //Pad the cells
         constraints.insets = new Insets(10, 10, 10, 10);
 
+        loginModel.getErrorLabel().setForeground(Color.red);
+
         //Create + Add components to panel
         constraints.gridx = 0;
         constraints.gridy = 0;

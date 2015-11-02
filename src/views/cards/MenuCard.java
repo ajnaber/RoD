@@ -26,6 +26,7 @@ public class MenuCard {
         MenuController menuController = new MenuController(menuModel);
 
         menuModel.getLoginButton().addActionListener(menuController);
+        menuModel.getRegisterButton().addActionListener(menuController);
 
         return menuPanel;
     }
