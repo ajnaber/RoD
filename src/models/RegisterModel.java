@@ -1,11 +1,20 @@
 package models;
 
+import database.UserLoginDB;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.swing.*;
 import java.awt.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class RegisterModel {
+    private byte[] salt;
+    private byte[] encryptedPassword;
 
     private CardLayout cardLayout;
     private JPanel cardHolder;
@@ -46,6 +55,64 @@ public class RegisterModel {
     }
 
     public void register() {
+        UserLoginDB userLoginDB = new UserLoginDB(this);
+
+        String errors = "";
+        if(!checkUsernameChars()) {
+            errors = "Username contained invalid characters.\n";
+        }
+
+        if(!checkPasswordsMatch()) {
+            errors += "Passwords did not match.\n";
+        }
+
+        if(!checkUsernameLength()) {
+            errors += "Username length invalid.\n";
+        }
+
+        if (!checkPasswordLength()) {
+            errors += "Password length invalid.\n";
+        }
+
+        if (!checkValidEmail()) {
+            errors += "Email failed validation, check it.\n";
+        }
+        //If no errors by this point all non-database checks have passed
+
+        if(errors.equals("")) {
+            if(!userLoginDB.checkDuplicateUsername()) {
+                errors += "Username already in use.\n";
+            }
+            if(!userLoginDB.checkDuplicateEmail()) {
+                errors+= "Email already in use.\n";
+            }
+        }
+
+        //Final check for errors, if none then submit the registration
+        if (!errors.equals("")) {
+            errors = "<html><pre>" + errors + "</html></pre>";
+            errorLabel.setText(errors);
+            System.out.println(errors);
+            //Clear out password information
+            passwordField.setText("");
+            reEnterPField.setText("");
+            usernameField.setText("");
+            emailField.setText("");
+
+        } else {
+            if (validateRegistration()) {
+                if (userLoginDB.subRegistration()) {
+                    errorLabel.setForeground(Color.BLACK);
+                    errorLabel.setText("Account Created: Check Email");
+
+                    //Clear out password information
+                    passwordField.setText("");
+                    reEnterPField.setText("");
+
+                }
+            }
+
+        }
 
     }
 
@@ -108,4 +175,74 @@ public class RegisterModel {
     public JLabel getEmailGuidelines() {
         return emailGuidelines;
     }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public byte[] getEncryptedPassword() {
+        return encryptedPassword;
+    }
+
+    //Registration Validation
+    private boolean checkUsernameChars() {
+        char[] uName = usernameField.getText().toCharArray();
+        boolean valid = true;
+
+        for (char c:uName) {
+            valid = ((c >= 'a') && (c <= 'z')) ||
+                    ((c >= 'A') && (c <= 'Z')) ||
+                    ((c >= '0') && (c <= 'z'));
+
+            if(!valid) break;
+        }
+
+        return valid;
+    }
+
+    private boolean checkPasswordsMatch() {
+        return Arrays.equals(passwordField.getPassword(), reEnterPField.getPassword());
+    }
+
+    //Check if username is < 1 or > 12 (should be)
+    private boolean checkUsernameLength() {
+        return (usernameField.getText().length() > 0 && usernameField.getText().length() < 13);
+    }
+
+    private boolean checkPasswordLength() {
+        return (passwordField.getPassword().length > 5);
+    }
+
+    private boolean checkValidEmail() {
+        boolean valid = true;
+
+        try {
+            InternetAddress emailAddr = new InternetAddress(emailField.getText());
+            emailAddr.validate();
+        } catch(AddressException e) {
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private boolean validateRegistration() {
+        SecurityModel securityModel = new SecurityModel();
+
+        try {
+            //Generate Salt
+            salt = securityModel.generateSalt();
+
+            //Encrypt password with salt
+            encryptedPassword = securityModel.getEncryptedPassword(passwordField.getPassword(), salt);
+
+            //Test authentication
+            return securityModel.authenticate(passwordField.getPassword(), encryptedPassword, salt);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        } 
+        return false;
+    }
+
+
 }

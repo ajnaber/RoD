@@ -1,6 +1,5 @@
 package views.cards;
 
-import controllers.LoginController;
 import controllers.RegisterController;
 import models.RegisterModel;
 
