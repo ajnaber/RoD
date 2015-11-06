@@ -1,5 +1,6 @@
 package models;
 
+import database.UserLoginDB;
 import views.GameGUI;
 
 import javax.swing.*;
@@ -29,6 +30,50 @@ public class LoginModel {
         this.cardHolder = cardHolder;
         this.cardList = cardList;
         this.gameGUI = gameGUI;
+    }
+
+    public void showMenuCard() {
+        cardLayout.show(cardHolder, cardList.get(0));
+    }
+
+    public void login() {
+        UserLoginDB userLoginDB = new UserLoginDB(this);
+
+        String errors = "";
+        if(!checkUsernameChars()) {
+            errors = "Username contained invalid characters.\n";
+        }
+
+        if(!checkUsernameLength()) {
+            errors += "Username length invalid.\n";
+        }
+
+        if (!checkPasswordLength()) {
+            errors += "Password length invalid.\n";
+        }
+
+        if(errors.equals("")) {
+
+            if (!userLoginDB.subLogin()) {
+                passwordField.setText("");
+                usernameField.setText("");
+                errorLabel.setText("Username or password incorrect.\n");
+            } else {
+                errorLabel.setText("Authenticated. Logging in...");
+
+                System.out.println("User successfully logged in.");
+                postLoginOperations();
+            }
+
+        } else {
+            errors = "<html><pre>" + errors + "</html></pre>";
+            errorLabel.setText(errors);
+            System.out.println(errors);
+            passwordField.setText("");
+            usernameField.setText("");
+        }
+
+
     }
 
     public JTextField getUsernameField() {
@@ -67,12 +112,33 @@ public class LoginModel {
         return loginNotice;
     }
 
-    public void showMenuCard() {
-        cardLayout.show(cardHolder, cardList.get(0));
+    //Registration Validation
+    private boolean checkUsernameChars() {
+        char[] uName = usernameField.getText().toCharArray();
+        boolean valid = true;
+
+        for (char c:uName) {
+            valid = ((c >= 'a') && (c <= 'z')) ||
+                    ((c >= 'A') && (c <= 'Z')) ||
+                    ((c >= '0') && (c <= 'z'));
+
+            if(!valid) break;
+        }
+
+        return valid;
     }
 
-    public void login() {
+    //Check if username is < 1 or > 12 (should be)
+    private boolean checkUsernameLength() {
+        return (usernameField.getText().length() > 0 && usernameField.getText().length() < 13);
+    }
 
+    private boolean checkPasswordLength() {
+        return (passwordField.getPassword().length > 5);
+    }
+
+    private void postLoginOperations() {
+        System.out.println("Creating user object and fetching user data and session info.");
     }
 
 }

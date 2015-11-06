@@ -108,8 +108,14 @@ public class RegisterModel {
                     //Clear out password information
                     passwordField.setText("");
                     reEnterPField.setText("");
+                    usernameField.setText("");
+                    emailField.setText("");
 
+                } else {
+                    System.out.println("Something went wrong submitting registration...");
                 }
+            } else {
+                System.out.println("Something went wrong validating registration...");
             }
 
         }
@@ -240,7 +246,7 @@ public class RegisterModel {
             return securityModel.authenticate(passwordField.getPassword(), encryptedPassword, salt);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
-        } 
+        }
         return false;
     }
 
