@@ -1,6 +1,8 @@
 package models;
 
 import database.UserLoginDB;
+import objects.User;
+import views.GameGUI;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -19,6 +21,7 @@ public class RegisterModel {
     private CardLayout cardLayout;
     private JPanel cardHolder;
     private ArrayList<String> cardList;
+    private User user;
 
     //Initialize the register panel
     private JPanel registerPanel = new JPanel(new GridBagLayout());
@@ -43,10 +46,11 @@ public class RegisterModel {
     private JLabel passwordGuidelines = new JLabel("<html><pre>Password needs to be at least 6 \ncharacters. Valid Characters: Any, so\nplease make it secure.</pre></html>");
     private JLabel emailGuidelines = new JLabel("<html><pre>Validation email will be sent to address,\nplease ensure it is correct.</pre></html>");
 
-    public RegisterModel(CardLayout cardLayout, JPanel cardHolder, ArrayList<String> cardList) {
+    public RegisterModel(CardLayout cardLayout, JPanel cardHolder, ArrayList<String> cardList, User user) {
         this.cardLayout = cardLayout;
         this.cardHolder = cardHolder;
         this.cardList = cardList;
+        this.user = user;
 
     }
 
@@ -90,6 +94,7 @@ public class RegisterModel {
 
         //Final check for errors, if none then submit the registration
         if (!errors.equals("")) {
+
             errors = "<html><pre>" + errors + "</html></pre>";
             errorLabel.setText(errors);
             System.out.println(errors);
@@ -101,7 +106,7 @@ public class RegisterModel {
 
         } else {
             if (validateRegistration()) {
-                if (userLoginDB.subRegistration()) {
+                if (userLoginDB.subRegistration(user)) {
                     errorLabel.setForeground(Color.BLACK);
                     errorLabel.setText("Account Created: Check Email");
 
@@ -110,6 +115,11 @@ public class RegisterModel {
                     reEnterPField.setText("");
                     usernameField.setText("");
                     emailField.setText("");
+
+                    //Run post login operations
+                    postRegisterOperations(userLoginDB);
+
+
 
                 } else {
                     System.out.println("Something went wrong submitting registration...");
@@ -120,6 +130,11 @@ public class RegisterModel {
 
         }
 
+    }
+
+    public void postRegisterOperations(UserLoginDB userLoginDB) {
+        System.out.println("Creating user object and registering user data and session info.");
+        userLoginDB.createNewUser(user);
     }
 
     public JPanel getRegisterPanel() {

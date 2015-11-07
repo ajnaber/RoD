@@ -1,6 +1,7 @@
 package models;
 
 import database.UserLoginDB;
+import objects.User;
 import views.GameGUI;
 
 import javax.swing.*;
@@ -22,14 +23,17 @@ public class LoginModel {
     private JButton loginButton = new JButton("Login");
     private JButton cancelButton = new JButton("Cancel");
     private JLabel loginNotice = new JLabel("<html><pre>Login using your credentials</pre></html>");
+    private User user;
 
     private JPanel loginPanel = new JPanel(new GridBagLayout());
 
-    public LoginModel(CardLayout cardLayout, JPanel cardHolder, ArrayList<String> cardList, GameGUI gameGUI) {
+    public LoginModel(CardLayout cardLayout, JPanel cardHolder, ArrayList<String> cardList, GameGUI gameGUI, User user) {
         this.cardLayout = cardLayout;
         this.cardHolder = cardHolder;
         this.cardList = cardList;
         this.gameGUI = gameGUI;
+        this.user = user;
+
     }
 
     public void showMenuCard() {
@@ -37,6 +41,8 @@ public class LoginModel {
     }
 
     public void login() {
+        loginButton.setEnabled(false);
+        cancelButton.setEnabled(false);
         UserLoginDB userLoginDB = new UserLoginDB(this);
 
         String errors = "";
@@ -58,11 +64,16 @@ public class LoginModel {
                 passwordField.setText("");
                 usernameField.setText("");
                 errorLabel.setText("Username or password incorrect.\n");
+                loginButton.setEnabled(true);
+                cancelButton.setEnabled(true);
             } else {
+                user.getUserLogin().setUsername(usernameField.getText());
+                passwordField.setText("");
+                usernameField.setText("");
                 errorLabel.setText("Authenticated. Logging in...");
 
                 System.out.println("User successfully logged in.");
-                postLoginOperations();
+                postLoginOperations(userLoginDB);
             }
 
         } else {
@@ -71,7 +82,19 @@ public class LoginModel {
             System.out.println(errors);
             passwordField.setText("");
             usernameField.setText("");
+            loginButton.setEnabled(true);
+            cancelButton.setEnabled(true);
         }
+
+
+    }
+
+    private void postLoginOperations(UserLoginDB userLoginDB) {
+        System.out.println("Creating user object and fetching user data and session info.");
+        //Fetch UserLogin info
+        userLoginDB.fetchAndCreateUser(user);
+        System.out.println("Post-login operations completed, initializing GUI.");
+        gameGUI.clearFrame();
 
 
     }
@@ -137,8 +160,6 @@ public class LoginModel {
         return (passwordField.getPassword().length > 5);
     }
 
-    private void postLoginOperations() {
-        System.out.println("Creating user object and fetching user data and session info.");
-    }
+
 
 }

@@ -63,8 +63,8 @@ public class GameGUI extends JFrame {
         cardWrapper.setPreferredSize(new Dimension(400, 600));
 
         MenuModel menuModel = new MenuModel(cardLayout, cardHolder, cardList);
-        LoginModel loginModel = new LoginModel(cardLayout, cardHolder, cardList, this);
-        RegisterModel registerModel = new RegisterModel(cardLayout, cardHolder, cardList);
+        LoginModel loginModel = new LoginModel(cardLayout, cardHolder, cardList, this, user);
+        RegisterModel registerModel = new RegisterModel(cardLayout, cardHolder, cardList, user);
         RecoverModel recoverModel = new RecoverModel(cardLayout, cardHolder, cardList);
 
         //Create panels for each card
@@ -86,5 +86,23 @@ public class GameGUI extends JFrame {
         this.add(cardWrapper);
         this.pack();
         this.setVisible(true);
+    }
+
+    public void clearFrame() {
+        this.getContentPane().removeAll();
+    }
+
+    public void createInGameUI() {
+        CardLayout cardLayout = new CardLayout();
+
+        //Wrapper and Holder for the cards
+        JPanel cardWrapper = new JPanel(new GridBagLayout());
+        cardWrapper.setPreferredSize(new Dimension(1920, 1080));
+
+        JPanel cardHolder = new JPanel(cardLayout);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+
     }
 }
